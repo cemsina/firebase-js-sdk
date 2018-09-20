@@ -45,13 +45,12 @@ exports.commitAndTag = async updatedVersions => {
 
   const tags = [];
   await Promise.all(
-    Object.keys(updatedVersions)
-      .map(name => ({ name, version: updatedVersions[name] }))
-      .map(async ({ name, version }) => {
-        const tag = `${name}@${version}`;
-        const result = await exec(`git tag ${tag}`);
-        tags.push(tag);
-      })
+    Object.keys(updatedVersions).reduce(async (tags,name)=>{
+      const tag = `${name}@${updatedVersions[name]}`;
+      await exec(`git tag ${tag}`);
+      tags.push(tag);
+      return tags;
+    },tags)
   );
   return tags;
 };
